@@ -29,7 +29,22 @@ logs/
 
 # Secretos / config local
 .env
+.env.*
+!.env.example
 config.local.yaml
+config.local.*
+.streamlit/secrets.toml
+*.pem
+*.key
+*.p12
+*.pfx
+*.ppk
+id_rsa
+id_ed25519
+.netrc
+.pypirc
+credentials.json
+service-account*.json
 
 # Memoria de Claude Code
 .claude/
@@ -37,3 +52,4 @@ config.local.yaml
 # Datos generados y copias de recuperación
 /data/
 /feeds_perdidos.csv
+*.bundle

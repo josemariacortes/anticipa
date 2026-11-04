@@ -121,3 +121,15 @@ Los archivos `cercanias-pipeline.service` y `cercanias-dashboard.service` descri
 Antes de migrar la cuenta del servicio hay que preparar el acceso al código, entorno, datos y cachés fuera de `/root`. Antes de compactar o archivar datos hay que adaptar los lectores: actualmente el nombre de cada archivo identifica una captura y permite enlazar original y Parquet. Esta versión no cambia ni borra el histórico para ahorrar espacio.
 
 Autoría y contexto académico: proyecto Anticipa, TFM EOI. Consulta también la memoria y los entregables del equipo para el alcance de cada sprint.
+
+## Análisis del EDA
+
+El [recálculo del EDA del 29/10/2026](analisis/eda_2026-10-29/Analisis_EDA_para_presentacion.md) incluye el informe, gráficos PNG/SVG y agregados del período 17/05–03/07/2026. Documenta los denominadores y distingue observaciones repetidas de viajes y estimaciones de retraso de llegadas verificadas.
+
+`analisis_eda_calidad_datos.md` conserva el EDA inicial como referencia histórica; para las cifras recalculadas y sus límites, utiliza el informe anterior. `analisis_feeds_perdidos.py` es una herramienta exploratoria que compara capturas con una ventana de referencia; sus recuentos no demuestran caídas del proveedor. El dashboard antiguo `dashboard_nucleos.py` se ha retirado: sus vistas están integradas en `dashboard.py` y su código anterior sigue disponible en el historial Git.
+
+## Archivos privados y generados
+
+El repositorio contiene código, pruebas, documentación y resultados agregados. El histórico bruto y Parquet, el entorno Python, las cachés, los estados locales y las copias de recuperación se mantienen fuera de Git. Los datos se comparten desde la página de descargas.
+
+Las claves privadas, los archivos `.env`, `config.local.*` y `.streamlit/secrets.toml` están excluidos. Configura cualquier credencial en la instalación local; las fuentes públicas de Renfe utilizadas por este piloto no requieren credenciales en el código.

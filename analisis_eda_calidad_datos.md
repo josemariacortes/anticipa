@@ -1,5 +1,7 @@
 # 6.2 Calidad de los datos — EDA inicial (datos reales captura propia)
 
+> Documento histórico del análisis inicial. Algunas cifras y atribuciones no coinciden con las comprobaciones posteriores: el período abarca 48 días naturales con datos en 47 fechas, el volumen comprende toda la red capturada y los huecos de archivos no prueban una caída de Renfe. Para las cifras recalculadas y los límites de interpretación, consulta el [informe del 29/10/2026](analisis/eda_2026-10-29/Analisis_EDA_para_presentacion.md).
+
 **Período analizado:** 17 mayo – 3 julio 2026 (47 días)  
 **Fuente:** Pipeline GTFS-RT propio, feeds `vehicle_positions`, `trip_updates` y `alerts` de Renfe Open Data  
 **Fecha del análisis:** 3 julio 2026
