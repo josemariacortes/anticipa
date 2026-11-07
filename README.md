@@ -59,19 +59,35 @@ Los indicadores K1–K5 completos, la latencia hasta el navegador y el rendimien
 
 ## Ejecutar
 
-Requiere Python 3.12 y acceso a los endpoints configurados. Desde la carpeta del proyecto:
+Requiere Python 3.12 y acceso a los endpoints configurados. Crea y activa un entorno virtual antes de instalar las dependencias.
+
+En macOS:
 
 ```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
 python main.py
 ```
 
-En otra terminal, con el mismo entorno:
+En Windows, desde PowerShell:
+
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe main.py
+```
+
+En macOS, en otra terminal, activa el mismo entorno y arranca el dashboard:
 
 ```bash
 python serve_dashboard.py
+```
+
+En PowerShell, usa directamente el intérprete del entorno virtual:
+
+```powershell
+.\.venv\Scripts\python.exe serve_dashboard.py
 ```
 
 La captura inicial prepara las fuentes estáticas. El dashboard necesita archivos Parquet de las tres fuentes. Los datos se guardan en `data/`, excluido del repositorio junto con cachés, estados, evidencias y copias de recuperación. Para reproducir cifras históricas hay que disponer del conjunto correspondiente y de su referencia GTFS; clonar el código no descarga todo el histórico.

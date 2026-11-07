@@ -1,6 +1,5 @@
 """Inventario incremental de los archivos conservados del piloto."""
 import argparse
-import fcntl
 import json
 import logging
 import os
@@ -11,6 +10,7 @@ from pathlib import Path
 import pyarrow.parquet as pq
 
 from src.config import load
+from src.file_lock import acquire_nonblocking_lock
 
 FEEDS = ('vehicle_positions', 'trip_updates', 'alerts')
 SCHEMA_VERSION = 1
@@ -23,7 +23,7 @@ def inventory_path(cfg):
 
 def read_inventory(cfg):
     try:
-        data = json.loads(inventory_path(cfg).read_text())
+        data = json.loads(inventory_path(cfg).read_text(encoding='utf-8'))
         return data if data.get('version') == SCHEMA_VERSION else None
     except (FileNotFoundError, json.JSONDecodeError):
         return None
@@ -81,7 +81,7 @@ def _scan_partition(raw, bronze, feed, day):
 def _atomic_json(path, data):
     fd, name = tempfile.mkstemp(prefix='.pilot-', suffix='.tmp', dir=path.parent)
     try:
-        with os.fdopen(fd, 'w') as handle:
+        with os.fdopen(fd, 'w', encoding='utf-8') as handle:
             json.dump(data, handle, ensure_ascii=False)
             handle.flush()
             os.fsync(handle.fileno())
@@ -94,9 +94,9 @@ def _atomic_json(path, data):
 def build_inventory(cfg, force=False, progress=None):
     target = inventory_path(cfg)
     target.parent.mkdir(parents=True, exist_ok=True)
-    with (target.parent / 'pilot.lock').open('a') as lock:
+    with (target.parent / 'pilot.lock').open('a+b') as lock:
         try:
-            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            acquire_nonblocking_lock(lock)
         except BlockingIOError:
             raise RuntimeError('Ya hay una actualización del inventario en curso.') from None
         old = read_inventory(cfg) or {}

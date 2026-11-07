@@ -1,6 +1,5 @@
 """Continuidad de capturas y comprobaciones reproducibles de un día."""
 import json
-import fcntl
 import os
 from datetime import datetime, timezone
 from datetime import timedelta, time
@@ -10,6 +9,7 @@ import duckdb
 import pandas as pd
 import pyarrow.parquet as pq
 from src.pilot_inventory import _atomic_json, _signature, inventory_path
+from src.file_lock import acquire_nonblocking_lock
 
 POSITION_FEEDS = ('vehicle_positions', 'trip_updates')
 
@@ -61,7 +61,7 @@ def _cache_path(cfg, name):
 
 def read_continuity(cfg):
     try:
-        return json.loads(_cache_path(cfg, 'continuity.json').read_text())
+        return json.loads(_cache_path(cfg, 'continuity.json').read_text(encoding='utf-8'))
     except (FileNotFoundError, json.JSONDecodeError):
         return None
 
@@ -134,7 +134,7 @@ def continuity_gaps(cache, start, end):
 def read_day_report(cfg, day):
     path=_cache_path(cfg, f'quality-{day}.json')
     try:
-        return json.loads(path.read_text())
+        return json.loads(path.read_text(encoding='utf-8'))
     except (FileNotFoundError,json.JSONDecodeError):
         return None
 
@@ -225,8 +225,8 @@ def _analyze_day(cfg, day):
 def _locked(cfg, name, operation):
     folder=inventory_path(cfg).parent
     folder.mkdir(parents=True,exist_ok=True)
-    with (folder/name).open('a') as lock:
-        try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+    with (folder/name).open('a+b') as lock:
+        try:acquire_nonblocking_lock(lock)
         except BlockingIOError:raise RuntimeError('Ya hay una comprobación en curso. Puedes consultar el último resultado.') from None
         return operation()
 

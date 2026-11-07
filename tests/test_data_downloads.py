@@ -55,7 +55,12 @@ def test_symlink_and_temporary_files_are_not_exported(tmp_path):
     cfg,paths=seed(tmp_path)
     secret=tmp_path/'secret';secret.write_bytes(b'secret')
     folder=paths[0].parent
-    (folder/'trip_updates_20261027T130000Z.pb').symlink_to(secret)
+    try:
+        (folder/'trip_updates_20261027T130000Z.pb').symlink_to(secret)
+    except OSError as exc:
+        if os.name == 'nt' and getattr(exc, 'winerror', None) == 1314:
+            pytest.skip('Creating symbolic links requires Windows developer mode or elevated privileges')
+        raise
     (folder/'part.tmp').write_bytes(b'incomplete')
     plan=select_files(cfg,'2026-10-27',['raw'],['trip_updates'])
     assert [item.path for item in plan['files']]==[paths[0]]
