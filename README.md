@@ -30,14 +30,14 @@ La descarga conserva una captura cuando cambia la fecha de la cabecera. Por tant
 
 ## Vistas
 
-| Vista | Qué permite comprobar |
-|---|---|
-| El piloto en cifras | Archivos, filas, fechas, volumen y evolución de toda la red capturada. |
+| Vista                 | Qué permite comprobar                                                                                                                             |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| El piloto en cifras   | Archivos, filas, fechas, volumen y evolución de toda la red capturada.                                                                            |
 | Del dato al indicador | Una captura fijada o histórica: original, fila Parquet, cruce con GTFS, cálculo sin filtro y efecto del filtro analítico. Descarga de evidencias. |
-| Red en vivo | Última captura, observaciones de retraso y estado de los avisos. |
-| Por núcleo | Posiciones y desviación estimada por núcleo; comparación histórica ponderada por observaciones. |
-| Tendencia del día | Porcentaje de observaciones sin retraso y mapa de desviaciones por parada. |
-| Sistema y calidad | Servicios, disco, fecha de los datos, última descarga correcta, continuidad y comprobaciones de un día. |
+| Red en vivo           | Última captura, observaciones de retraso y estado de los avisos.                                                                                  |
+| Por núcleo            | Posiciones y desviación estimada por núcleo; comparación histórica ponderada por observaciones.                                                   |
+| Tendencia del día     | Porcentaje de observaciones sin retraso y mapa de desviaciones por parada.                                                                        |
+| Sistema y calidad     | Servicios, disco, fecha de los datos, última descarga correcta, continuidad y comprobaciones de un día.                                           |
 
 Madrid es el ámbito inicial de las vistas analíticas. El selector se comparte entre esas vistas. El inventario y las comprobaciones de archivos abarcan todas las fuentes conservadas, no solamente Madrid. La actualización de la página es manual.
 
@@ -149,3 +149,20 @@ El [recálculo del EDA del 29/10/2026](analisis/eda_2026-10-29/Analisis_EDA_para
 El repositorio contiene código, pruebas, documentación y resultados agregados. El histórico bruto y Parquet, el entorno Python, las cachés, los estados locales y las copias de recuperación se mantienen fuera de Git. Los datos se comparten desde la página de descargas.
 
 Las claves privadas, los archivos `.env`, `config.local.*` y `.streamlit/secrets.toml` están excluidos. Configura cualquier credencial en la instalación local; las fuentes públicas de Renfe utilizadas por este piloto no requieren credenciales en el código.
+
+## Parar la recogida de datos
+
+Para detener la recogida de datos desde otra consola de PowerShell, localiza el proceso de este proyecto:
+
+```powershell
+$projectPath = (Resolve-Path .).Path
+Get-CimInstance Win32_Process |
+  Where-Object {
+    $_.Name -match '^python(w)?\.exe$' -and
+    $_.CommandLine -match [regex]::Escape($projectPath) -and
+    $_.CommandLine -match 'main\.py'
+  } |
+  Select-Object ProcessId, CommandLine
+
+Stop-Process -Id <PID> -Force
+```
